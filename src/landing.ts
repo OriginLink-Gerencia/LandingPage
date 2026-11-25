@@ -1,10 +1,65 @@
+import { defaultLocale, languageTags, translate, type Locale, type MessageKey } from './i18n';
+
 const root = document.documentElement;
 const theme = document.querySelector<HTMLButtonElement>('.theme-control')!;
+const languageControl = document.querySelector<HTMLAnchorElement>('.language-control')!;
+const localeUrls = { es: languageControl.dataset.esUrl!, en: languageControl.dataset.enUrl! };
+const form = document.querySelector<HTMLFormElement>('#pilot-form')!;
+const submit = form.querySelector('button')!;
+const status = form.querySelector('.form-status')!;
+const formLocale = form.querySelector<HTMLInputElement>('input[name="locale"]');
+const localizedText = document.querySelectorAll<HTMLElement>('[data-i18n]');
+const localizedLabels = document.querySelectorAll<HTMLElement>('[data-i18n-label]');
+const localizedImages = document.querySelectorAll<HTMLElement>('[data-i18n-image]');
+const description = document.querySelector<HTMLMetaElement>('meta[name="description"]')!;
+let locale: Locale = root.lang === languageTags.en ? 'en' : defaultLocale;
+let formStatus: 'sending' | 'success' | 'error' | undefined;
+
 function updateTheme(dark: boolean) {
   root.dataset.theme = dark ? 'dark' : 'light';
-  theme.setAttribute('aria-label', dark ? 'Activar modo claro' : 'Activar modo oscuro');
-  theme.title = theme.getAttribute('aria-label')!;
+  const t = translate(locale);
+  const label = dark ? t.light : t.dark;
+  theme.setAttribute('aria-label', label);
+  theme.title = label;
 }
+
+function updateFormStatus(next: typeof formStatus) {
+  formStatus = next;
+  status.textContent = next ? translate(locale)[next] : '';
+}
+
+function applyLanguage(next: Locale) {
+  locale = next;
+  const t = translate(locale);
+  const alternate = locale === 'es' ? 'en' : 'es';
+  root.lang = languageTags[locale];
+  document.title = t.title;
+  description.content = t.description;
+  for (const element of localizedText) element.textContent = t[element.dataset.i18n as MessageKey];
+  for (const element of localizedLabels) element.setAttribute('aria-label', t[element.dataset.i18nLabel as MessageKey]);
+  for (const figure of localizedImages) figure.querySelector('img')!.alt = t[figure.dataset.i18nImage as MessageKey];
+  if (formLocale) formLocale.value = locale;
+  updateFormStatus(formStatus);
+  updateTheme(root.dataset.theme === 'dark');
+  languageControl.href = localeUrls[alternate];
+  languageControl.hreflang = languageTags[alternate];
+  languageControl.lang = languageTags[alternate];
+  languageControl.textContent = alternate.toUpperCase();
+  languageControl.setAttribute('aria-label', alternate === 'en' ? 'English' : 'Español');
+}
+
+languageControl.addEventListener('click', event => {
+  if (event.defaultPrevented || event.button !== 0 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+  event.preventDefault();
+  const next = locale === 'es' ? 'en' : 'es';
+  history.pushState(null, '', localeUrls[next] + location.search + location.hash);
+  applyLanguage(next);
+});
+window.addEventListener('popstate', () => {
+  const next = location.pathname.replace(/\/$/, '') === localeUrls.en.replace(/\/$/, '') ? 'en' : defaultLocale;
+  if (next !== locale) applyLanguage(next);
+});
+
 const preference = matchMedia('(prefers-color-scheme: dark)');
 let explicitTheme = false;
 try { explicitTheme = ['light', 'dark'].includes(localStorage.getItem('originlink-theme') || ''); } catch {}
@@ -41,14 +96,11 @@ card.addEventListener('change', event => {
   card.style.setProperty('--stock-share', (100 * stock / demand) + '%');
 });
 
-const form = document.querySelector<HTMLFormElement>('#pilot-form')!;
-const submit = form.querySelector('button')!;
-const status = form.querySelector('.form-status')!;
 form.addEventListener('submit', async event => {
   event.preventDefault();
   if (submit.disabled || !form.reportValidity()) return;
   submit.disabled = true;
-  status.textContent = 'Enviando tu solicitud…';
+  updateFormStatus('sending');
   try {
     const data = new URLSearchParams();
     new FormData(form).forEach((value, key) => data.set(key, String(value).trim()));
@@ -56,9 +108,9 @@ form.addEventListener('submit', async event => {
     const result = await response.json();
     if (!response.ok || result.ok !== true) throw new Error();
     form.reset();
-    status.textContent = 'Solicitud registrada. Gracias por tu interés en el piloto.';
+    updateFormStatus('success');
   } catch {
-    status.textContent = 'No pudimos confirmar el registro. Revisa tus datos y vuelve a intentarlo.';
+    updateFormStatus('error');
   } finally {
     submit.disabled = false;
   }

@@ -13,6 +13,10 @@ npm run dev
 
 Abre la dirección local que muestra la terminal. Para probar el resultado de producción, ejecuta `npm run build` y después `npm run preview`.
 
+## Idiomas
+
+La página principal `/` está en español y `/en/` está en inglés. Ambas rutas se generan como HTML estático. El selector actualiza el idioma en pantalla y la URL sin recargar la página. Edita los textos en `src/i18n.ts`.
+
 ## Solicitudes del piloto
 
 En desarrollo y en la vista previa, el formulario registra cada solicitud en un archivo JSON dentro de `.pilot-data/`. La carpeta es privada, está excluida de Git y queda fuera de la compilación. Puedes elegir otra ubicación mediante `ORIGINLINK_PILOT_DIR`. El registro local no envía correos.
