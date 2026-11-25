@@ -19,6 +19,9 @@ const alternate = locale === 'es' ? 'en' : 'es';
 const localeUrls = { es: getRelativeLocaleUrl('es'), en: getRelativeLocaleUrl('en') };
 const alternateUrl = localeUrls[alternate];
 const assetRoot = import.meta.env.BASE_URL.replace(/\/$/, '');
+const shareImage = Astro.site && new URL(`${assetRoot}/marca/originlink-social.jpg`, Astro.site);
+const shareUrl = Astro.site && new URL(localeUrls[locale], Astro.site);
+const shareLocales = { es: 'es_PE', en: 'en_US' } satisfies Record<Locale, string>;
 const externalEndpoint = import.meta.env.PUBLIC_PILOT_ENDPOINT?.trim();
 const pilotEndpoint = externalEndpoint || '/api/piloto';
 const steps = [
@@ -33,7 +36,7 @@ const links = [
 ] as const;
 ---
 <!doctype html>
-<html lang={languageTags[locale]}>
+<html lang={languageTags[locale]} prefix="og: https://ogp.me/ns#">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -41,6 +44,20 @@ const links = [
     <meta name="description" content={t.description} />
     <link rel="icon" type="image/svg+xml" href={assetRoot + "/marca/03-isotipo.svg"} />
     <title>{t.title}</title>
+    {shareUrl && shareImage && <>
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content="OriginLink" />
+      <meta property="og:title" content={t.title} />
+      <meta property="og:description" content={t.description} />
+      <meta property="og:url" content={shareUrl.href} />
+      <meta property="og:locale" content={shareLocales[locale]} />
+      <meta property="og:locale:alternate" content={shareLocales[alternate]} />
+      <meta property="og:image" content={shareImage.href} />
+      <meta property="og:image:type" content="image/jpeg" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={t.shareImageAlt} />
+    </>}
     <script is:inline>
       try {
         const selected = localStorage.getItem('originlink-theme');

@@ -17,6 +17,10 @@ Abre la dirección local que muestra la terminal. Para probar el resultado de pr
 
 La página principal `/` está en español y `/en/` está en inglés. Ambas rutas se generan como HTML estático. El selector actualiza el idioma en pantalla y la URL sin recargar la página. Edita los textos en `src/i18n.ts`.
 
+## Vista previa al compartir
+
+La landing incluye una tarjeta Open Graph con el logo para WhatsApp. Netlify usa automáticamente el dominio principal del sitio. En otro hosting, define `SITE_URL` con la URL pública del sitio en el entorno de compilación y vuelve a ejecutar `npm run build`.
+
 ## Solicitudes del piloto
 
 En desarrollo y en la vista previa, el formulario registra cada solicitud en un archivo JSON dentro de `.pilot-data/`. La carpeta es privada, está excluida de Git y queda fuera de la compilación. Puedes elegir otra ubicación mediante `ORIGINLINK_PILOT_DIR`. El registro local no envía correos.

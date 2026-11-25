@@ -7,6 +7,7 @@ const messages = {
   es: {
     title: "OriginLink — Planificación de café verde para tostadoras",
     description: "Planifica el abastecimiento de café verde de tu tostadora. Revisa existencias, anticipa compras y coordina con tus proveedores en OriginLink.",
+    shareImageAlt: "Logo de OriginLink",
     skip: "Saltar al contenido",
     home: "OriginLink, inicio",
     nav: "Navegación principal",
@@ -70,6 +71,7 @@ const messages = {
   en: {
     title: "OriginLink — Green coffee planning for roasters",
     description: "Plan your roastery’s green coffee supply. Track stock, anticipate purchases, and coordinate with suppliers in OriginLink.",
+    shareImageAlt: "OriginLink logo",
     skip: "Skip to content",
     home: "OriginLink, home",
     nav: "Main navigation",

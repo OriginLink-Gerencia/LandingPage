@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import vite from './vite.config.mjs';
 
 export default defineConfig({
+  site: process.env.SITE_URL?.trim() || (process.env.NETLIFY === 'true' ? process.env.URL : undefined),
   i18n: {
     defaultLocale: 'es',
     locales: ['es', 'en'],
