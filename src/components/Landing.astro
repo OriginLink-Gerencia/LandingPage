@@ -24,6 +24,7 @@ const shareUrl = Astro.site && new URL(localeUrls[locale], Astro.site);
 const shareLocales = { es: 'es_PE', en: 'en_US' } satisfies Record<Locale, string>;
 const externalEndpoint = import.meta.env.PUBLIC_PILOT_ENDPOINT?.trim();
 const pilotEndpoint = externalEndpoint || '/api/piloto';
+const appUrl = 'https://originlink-489af.web.app/';
 const steps = [
   { icon: 'inventory', title: 'stepOne', body: 'stepOneBody' },
   { icon: 'forecast', title: 'stepTwo', body: 'stepTwoBody' },
@@ -73,8 +74,11 @@ const links = [
       <div class="actions">
         <a class="language-control" href={alternateUrl} data-es-url={localeUrls.es} data-en-url={localeUrls.en} lang={languageTags[alternate]} hreflang={languageTags[alternate]} aria-label={alternate === 'en' ? 'English' : 'Español'}>{alternate.toUpperCase()}</a>
         <button class="theme-control" aria-label={t.dark} type="button"><span class="moon"><Icon name="moon" /></span><span class="sun"><Icon name="sun" /></span></button>
-        <a href="#piloto" class="button header-cta"><span data-i18n="access">{t.access}</span> <Icon name="arrow" /></a>
         <details class="mobile-nav"><summary aria-label={t.menu} data-i18n-label="menu"><Icon name="menu" /></summary><nav aria-label={t.mobileNav} data-i18n-label="mobileNav">{links.map(link => <a href={link.href} data-i18n={link.label}>{t[link.label]}</a>)}</nav></details>
+      </div>
+      <div class="account-actions">
+        <a href={appUrl} class="button account-secondary" data-i18n="signIn">{t.signIn}</a>
+        <a href={appUrl} class="button" data-i18n="signUp">{t.signUp}</a>
       </div>
     </header>
     <main id="principal">
